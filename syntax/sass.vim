@@ -20,10 +20,12 @@ syn region sassDefinition matchgroup=cssBraces start="{" end="}" contains=TOP
 syn match sassProperty "\%([{};]\s*\|^\)\@<=\%([[:alnum:]-]\|#{[^{}]*}\)\+:" contains=css.*Prop skipwhite nextgroup=sassCssAttribute contained containedin=sassDefinition
 syn match sassProperty "^\s*\zs\s\%(\%([[:alnum:]-]\|#{[^{}]*}\)\+:\|:[[:alnum:]-]\+\)"hs=s+1 contains=css.*Prop skipwhite nextgroup=sassCssAttribute
 syn match sassProperty "^\s*\zs\s\%(:\=[[:alnum:]-]\+\s*=\)"hs=s+1 contains=css.*Prop skipwhite nextgroup=sassCssAttribute
-syn match sassCssAttribute +\%("\%([^"]\|\\"\)*"\|'\%([^']\|\\'\)*'\|#{[^{}]*}\|[^{};]\)*+ contained contains=@sassCssAttributes,sassVariable,sassFunction,sassInterpolation
+syn match sassCssAttribute +\%("\%([^"]\|\\"\)*"\|'\%([^']\|\\'\)*'\|#{[^{}]*}\|[^{};]\)*+ contained contains=@sassCssAttributes,sassVariable,sassFunction,sassInterpolation,sassBoolean
 syn match sassDefault "!default\>" contained
+syn match sassOptional "!optional\>" contained
 syn match sassVariable "!\%(important\>\|default\>\)\@![[:alnum:]_-]\+"
 syn match sassVariable "$[[:alnum:]_-]\+"
+syn match sassBoolean "\%(true\|false\)"
 syn match sassVariableAssignment "\%([!$][[:alnum:]_-]\+\s*\)\@<=\%(||\)\==" nextgroup=sassCssAttribute skipwhite
 syn match sassVariableAssignment "\%([!$][[:alnum:]_-]\+\s*\)\@<=:" nextgroup=sassCssAttribute skipwhite
 
@@ -41,14 +43,18 @@ syn match sassMixin  "^="               nextgroup=sassMixinName skipwhite
 syn match sassMixin  "\%([{};]\s*\|^\s*\)\@<=@mixin"   nextgroup=sassMixinName skipwhite
 syn match sassMixing "^\s\+\zs+"        nextgroup=sassMixinName
 syn match sassMixing "\%([{};]\s*\|^\s*\)\@<=@include" nextgroup=sassMixinName skipwhite
-syn match sassExtend "\%([{};]\s*\|^\s*\)\@<=@extend"
+syn match sassExtend "\%([{};]\s*\|^\s*\)\@<=@extend" nextgroup=sassExtendArg skipwhite
+syn match sassExtendArg "[^;]*\(;\|$\)" contained contains=sassOptional skipwhite
 
 syn match sassEscape     "^\s*\zs\\"
 syn match sassIdChar     "#[[:alnum:]_-]\@=" nextgroup=sassId
 syn match sassId         "[[:alnum:]_-]\+" contained
 syn match sassClassChar  "\.[[:alnum:]_-]\@=" nextgroup=sassClass
 syn match sassClass      "[[:alnum:]_-]\+" contained
+syn match sassPlaceholderChar "%[[:alnum:]_-]\@=" nextgroup=sassPlaceholder
+syn match sassPlaceholder     "[[:alnum:]_-]\+" contained
 syn match sassAmpersand  "&"
+syn match sassContent "@content"
 
 " TODO: Attribute namespaces
 " TODO: Arithmetic (including strings and concatenation)
@@ -66,24 +72,30 @@ syn region  sassCssComment  start="^\z(\s*\)/\*" end="^\%(\z1 \)\@!" contains=sa
 hi def link sassCssComment              sassComment
 hi def link sassComment                 Comment
 hi def link sassDefault                 cssImportant
+hi def link sassOptional                cssImportant
 hi def link sassVariable                Identifier
 hi def link sassFunction                Function
 hi def link sassMixing                  PreProc
 hi def link sassMixin                   PreProc
 hi def link sassExtend                  PreProc
+hi def link sassExtendArg               Statement
 hi def link sassTodo                    Todo
 hi def link sassInclude                 Include
 hi def link sassDebug                   sassControl
 hi def link sassWarn                    sassControl
+hi def link sassContent                 sassControl
 hi def link sassControl                 PreProc
+hi def link sassBoolean                 Constant
 hi def link sassFor                     PreProc
 hi def link sassEscape                  Special
 hi def link sassIdChar                  Special
 hi def link sassClassChar               Special
+hi def link sassPlaceholderChar         Special
 hi def link sassInterpolationDelimiter  Delimiter
 hi def link sassAmpersand               Character
 hi def link sassId                      Identifier
 hi def link sassClass                   Type
+hi def link sassPlaceholder             Type
 
 let b:current_syntax = "sass"
 
